@@ -1,15 +1,23 @@
 package com.example.imageload;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -18,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +42,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-        String url = "https://media.gettyimages.com/photos/cropped-image-of-person-eye-picture-id942369796?s=2048x2048";
+
+        //TO increase and decrease brightness
+        StringBuilder builder = new StringBuilder();
+        builder.append("android : ").append(Build.VERSION.RELEASE);
+
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            int fieldValue = -1;
+
+            try {
+                fieldValue = field.getInt(new Object());
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            if (fieldValue == Build.VERSION.SDK_INT) {
+                builder.append(" : ").append(fieldName).append(" : ");
+                builder.append("sdk=").append(fieldValue);
+            }
+        }
+
+        Log.d("Card Display: ", "OS: " + builder.toString());
+
+        String url = "https://media-exp1.licdn.com/dms/image/C510BAQGXSkwC0-gIag/company-logo_200_200/0?e=2159024400&v=beta&t=9R49YbLqg5YT0pCBY0pLPgR4Y93A6Euf5PSPf9kwCCQ";
 
         Picasso.get().load(url).into(target);
 
@@ -107,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(screenWidth, screenHeight);
             setContentView(layout, params);
 
-            RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(screenWidth, screenHeight);
 
 
             imageView = new ImageView(this);
@@ -143,3 +179,4 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+
